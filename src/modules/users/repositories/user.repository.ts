@@ -21,6 +21,8 @@ export class UserRepository extends Repository<User> {
       where: query,
     });
 
+    console.log('USER', user);
+
     if (!user) {
       throw new NotFoundException(`User not found`);
     }

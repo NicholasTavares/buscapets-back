@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // só ver os dados do dto
@@ -11,6 +12,6 @@ async function bootstrap() {
       transform: true, // faz validação de tipagem
     }),
   );
-  await app.listen(3000);
+  await app.listen(3002);
 }
 bootstrap();
