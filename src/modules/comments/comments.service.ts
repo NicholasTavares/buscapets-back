@@ -7,6 +7,7 @@ import { CommentRepository } from './repositories/comment.repository';
 @Injectable()
 export class CommentsService {
   constructor(private readonly commentRepository: CommentRepository) {}
+
   async findAllComments(): Promise<Comment[]> {
     const comments = await this.commentRepository.findAll();
 

@@ -8,6 +8,7 @@ import { PublicationRepository } from './repositories/publication.repository';
 @Injectable()
 export class PublicationsService {
   constructor(private readonly publicationRepository: PublicationRepository) {}
+
   async findAllPublications(): Promise<Publication[]> {
     const publications = await this.publicationRepository.findAll();
 

@@ -10,5 +10,6 @@ import { PublicationPicture } from './entities/publication_picture.entity';
   imports: [TypeOrmModule.forFeature([Publication, PublicationPicture])],
   providers: [PublicationsService, PublicationRepository],
   controllers: [PublicationsController],
+  exports: [PublicationsService],
 })
 export class PublicationsModule {}
