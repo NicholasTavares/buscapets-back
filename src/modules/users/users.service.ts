@@ -15,8 +15,8 @@ export class UsersService {
     return users;
   }
 
-  async findUser(query: any): Promise<User> {
-    const user = await this.userRepository.findUser(query);
+  async findUser(user_id: string): Promise<User> {
+    const user = await this.userRepository.findUser(user_id);
 
     return user;
   }
