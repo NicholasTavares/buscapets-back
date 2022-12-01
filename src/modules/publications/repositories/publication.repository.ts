@@ -70,7 +70,18 @@ export class PublicationRepository extends Repository<Publication> {
   }
 
   async softRemovePublication(user_id: string, publication_id: string) {
-    // TODO checar se está funcionando apenas para o dono da publicação
-    await this.softRemove({ id: publication_id, user_id: user_id });
+    const publication = await this.findOne({
+      where: {
+        id: publication_id,
+        user_id,
+      },
+      relations: ['comments', 'publication_pictures'],
+    });
+
+    if (!publication) {
+      throw new NotFoundException(`Publication ID ${publication_id} not found`);
+    }
+
+    await this.softRemove(publication);
   }
 }
