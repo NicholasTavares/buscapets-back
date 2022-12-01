@@ -33,10 +33,12 @@ export class CommentsService {
   }
 
   async updateComment(
+    user_id: string,
     comment_id: string,
     updateCommentDTO: UpdateCommentDTO,
   ): Promise<Comment> {
     const comment = await this.commentRepository.updateComment(
+      user_id,
       comment_id,
       updateCommentDTO,
     );
@@ -44,7 +46,7 @@ export class CommentsService {
     return comment;
   }
 
-  async softRemoveComment(comment_id: string) {
-    await this.commentRepository.softRemoveComment(comment_id);
+  async softRemoveComment(user_id: string, comment_id: string) {
+    await this.commentRepository.softRemoveComment(user_id, comment_id);
   }
 }

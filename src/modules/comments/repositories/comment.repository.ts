@@ -44,22 +44,39 @@ export class CommentRepository extends Repository<Comment> {
   }
 
   async updateComment(
+    user_id: string,
     comment_id: string,
     updateCommentDTO: UpdateCommentDTO,
   ): Promise<Comment> {
-    const comment = await this.preload({
-      id: comment_id,
-      ...updateCommentDTO,
+    const comment = await this.findOne({
+      where: {
+        id: comment_id,
+        user_id,
+      },
     });
 
     if (!comment) {
       throw new NotFoundException(`Comment ID ${comment_id} not found`);
     }
 
-    return this.save(comment);
+    return this.save({
+      ...comment,
+      ...updateCommentDTO,
+    });
   }
 
-  async softRemoveComment(comment_id: string) {
-    await this.softRemove({ id: comment_id });
+  async softRemoveComment(user_id: string, comment_id: string) {
+    const comment = await this.findOne({
+      where: {
+        id: comment_id,
+        user_id,
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException(`Comment ID ${comment_id} not found`);
+    }
+
+    await this.softRemove(comment);
   }
 }

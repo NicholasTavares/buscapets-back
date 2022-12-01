@@ -24,6 +24,7 @@ export class CommentsController {
     return this.commentsService.findAllComments();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':comment_id')
   findOne(@Param('comment_id') comment_id: string) {
     return this.commentsService.findComment(comment_id);
@@ -40,13 +41,18 @@ export class CommentsController {
   update(
     @Param('comment_id') comment_id: string,
     @Body() updateCommentDTO: UpdateCommentDTO,
+    @Request() req: any,
   ) {
-    return this.commentsService.updateComment(comment_id, updateCommentDTO);
+    return this.commentsService.updateComment(
+      req.user.id,
+      comment_id,
+      updateCommentDTO,
+    );
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':comment_id')
-  remove(@Param('comment_id') comment_id: string) {
-    return this.commentsService.softRemoveComment(comment_id);
+  remove(@Param('comment_id') comment_id: string, @Request() req: any) {
+    return this.commentsService.softRemoveComment(req.user.id, comment_id);
   }
 }
