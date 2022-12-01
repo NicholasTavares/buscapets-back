@@ -52,14 +52,17 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async updateUser(id: string, updateUserDTO: UpdateUserDTO): Promise<User> {
+  async updateUser(
+    user_id: string,
+    updateUserDTO: UpdateUserDTO,
+  ): Promise<User> {
     const user = await this.preload({
-      id,
+      id: user_id,
       ...updateUserDTO,
     });
 
     if (!user) {
-      throw new NotFoundException(`User ID ${id} not found`);
+      throw new NotFoundException(`User ID ${user_id} not found`);
     }
 
     await this.save(user);
@@ -67,7 +70,7 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async softRemoveUser(id: string) {
-    await this.softRemove({ id });
+  async softRemoveUser(user_id: string) {
+    await this.softRemove({ id: user_id });
   }
 }
