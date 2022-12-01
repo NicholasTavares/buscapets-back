@@ -36,13 +36,11 @@ export class CommentRepository extends Repository<Comment> {
     user_id: string,
   ): Promise<Comment> {
     const comment = this.create({
-      ...createCommentDTO,
       user_id,
+      ...createCommentDTO,
     });
 
-    await this.save(comment);
-
-    return comment;
+    return this.save(comment);
   }
 
   async updateComment(
