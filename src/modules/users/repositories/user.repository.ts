@@ -65,12 +65,25 @@ export class UserRepository extends Repository<User> {
       throw new NotFoundException(`User ID ${user_id} not found`);
     }
 
-    await this.save(user);
-
-    return user;
+    return this.save(user);
   }
 
   async softRemoveUser(user_id: string) {
-    await this.softRemove({ id: user_id });
+    const user = await this.createQueryBuilder('user')
+      .innerJoin('user.comments', 'comments')
+      .innerJoin('user.publications', 'publications')
+      .innerJoin('publications.publication_pictures', 'publication_pictures')
+      .where({
+        id: user_id,
+      })
+      .select(['user.id'])
+      .addSelect(['comments.id', 'publications.id', 'publication_pictures.id'])
+      .getMany();
+
+    if (!user.length) {
+      throw new NotFoundException(`User ID ${user_id} not found`);
+    }
+
+    await this.softRemove(user);
   }
 }
