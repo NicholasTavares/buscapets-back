@@ -16,16 +16,16 @@ export class CommentRepository extends Repository<Comment> {
     return comments;
   }
 
-  async findComment(id: string): Promise<Comment> {
+  async findComment(comment_id: string): Promise<Comment> {
     const comment = await this.findOne({
       where: {
-        id,
+        id: comment_id,
       },
       relations: ['user', 'publication'],
     });
 
     if (!comment) {
-      throw new NotFoundException(`Comment ID ${id} not found`);
+      throw new NotFoundException(`Comment ID ${comment_id} not found`);
     }
 
     return comment;
@@ -46,22 +46,22 @@ export class CommentRepository extends Repository<Comment> {
   }
 
   async updateComment(
-    id: string,
+    comment_id: string,
     updateCommentDTO: UpdateCommentDTO,
   ): Promise<Comment> {
     const comment = await this.preload({
-      id,
+      id: comment_id,
       ...updateCommentDTO,
     });
 
     if (!comment) {
-      throw new NotFoundException(`Comment ID ${id} not found`);
+      throw new NotFoundException(`Comment ID ${comment_id} not found`);
     }
 
     return this.save(comment);
   }
 
-  async softRemoveComment(id: string) {
-    await this.softRemove({ id });
+  async softRemoveComment(comment_id: string) {
+    await this.softRemove({ id: comment_id });
   }
 }

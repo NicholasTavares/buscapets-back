@@ -14,8 +14,8 @@ export class CommentsService {
     return comments;
   }
 
-  async findComment(id: string): Promise<Comment> {
-    const comment = await this.commentRepository.findComment(id);
+  async findComment(comment_id: string): Promise<Comment> {
+    const comment = await this.commentRepository.findComment(comment_id);
 
     return comment;
   }
@@ -33,18 +33,18 @@ export class CommentsService {
   }
 
   async updateComment(
-    id: string,
+    comment_id: string,
     updateCommentDTO: UpdateCommentDTO,
   ): Promise<Comment> {
     const comment = await this.commentRepository.updateComment(
-      id,
+      comment_id,
       updateCommentDTO,
     );
 
     return comment;
   }
 
-  async softRemoveComment(id: string) {
-    await this.commentRepository.softRemoveComment(id);
+  async softRemoveComment(comment_id: string) {
+    await this.commentRepository.softRemoveComment(comment_id);
   }
 }
