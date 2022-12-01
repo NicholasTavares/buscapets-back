@@ -20,6 +20,7 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
+
   @UseGuards(AuthGuard('jwt'))
   @Get()
   findAll() {

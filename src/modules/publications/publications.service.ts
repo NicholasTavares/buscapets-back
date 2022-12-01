@@ -42,10 +42,12 @@ export class PublicationsService {
   }
 
   async updatePublication(
+    user_id: string,
     publication_id: string,
     updatePublicationDTO: UpdatePublicationDTO,
   ): Promise<Publication> {
     const publication = await this.publicationRepository.updatePublication(
+      user_id,
       publication_id,
       updatePublicationDTO,
     );
@@ -53,7 +55,10 @@ export class PublicationsService {
     return publication;
   }
 
-  async softRemovePublication(publication_id: string) {
-    await this.publicationRepository.softRemovePublication(publication_id);
+  async softRemovePublication(user_id: string, publication_id: string) {
+    await this.publicationRepository.softRemovePublication(
+      user_id,
+      publication_id,
+    );
   }
 }

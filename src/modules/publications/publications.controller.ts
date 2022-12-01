@@ -20,7 +20,8 @@ import { PublicationsService } from './publications.service';
 @Controller('publications')
 export class PublicationsController {
   constructor(private readonly publicationService: PublicationsService) {}
-  @Get()
+
+  @Get('/all')
   findAll() {
     return this.publicationService.findAllPublications();
   }
@@ -56,8 +57,10 @@ export class PublicationsController {
   update(
     @Param('publication_id') publication_id: string,
     @Body() updatePublicationDTO: UpdatePublicationDTO,
+    @Request() req: any,
   ) {
     return this.publicationService.updatePublication(
+      req.user.id,
       publication_id,
       updatePublicationDTO,
     );
@@ -65,7 +68,10 @@ export class PublicationsController {
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':publication_id')
-  remove(@Param('publication_id') publication_id: string) {
-    return this.publicationService.softRemovePublication(publication_id);
+  remove(@Param('publication_id') publication_id: string, @Request() req: any) {
+    return this.publicationService.softRemovePublication(
+      req.user.id,
+      publication_id,
+    );
   }
 }

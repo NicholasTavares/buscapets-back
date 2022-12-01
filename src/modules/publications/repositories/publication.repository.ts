@@ -48,22 +48,29 @@ export class PublicationRepository extends Repository<Publication> {
   }
 
   async updatePublication(
+    user_id: string,
     publication_id: string,
     updatePublicationDTO: UpdatePublicationDTO,
   ): Promise<Publication> {
-    const publication = await this.preload({
-      id: publication_id,
-      ...updatePublicationDTO,
+    const publication = await this.findOne({
+      where: {
+        id: publication_id,
+        user_id,
+      },
     });
 
     if (!publication) {
       throw new NotFoundException(`Publication ID ${publication_id} not found`);
     }
 
-    return this.save(publication);
+    return this.save({
+      ...publication,
+      ...updatePublicationDTO,
+    });
   }
 
-  async softRemovePublication(publication_id: string) {
-    await this.softRemove({ id: publication_id });
+  async softRemovePublication(user_id: string, publication_id: string) {
+    // TODO checar se está funcionando apenas para o dono da publicação
+    await this.softRemove({ id: publication_id, user_id: user_id });
   }
 }
