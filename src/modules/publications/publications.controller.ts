@@ -25,9 +25,9 @@ export class PublicationsController {
     return this.publicationService.findAllPublications();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.publicationService.findPublication(id);
+  @Get(':publication_id')
+  findOne(@Param('publication_id') publication_id: string) {
+    return this.publicationService.findPublication(publication_id);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -52,17 +52,20 @@ export class PublicationsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Patch(':id')
+  @Patch(':publication_id')
   update(
-    @Param('id') id: string,
+    @Param('publication_id') publication_id: string,
     @Body() updatePublicationDTO: UpdatePublicationDTO,
   ) {
-    return this.publicationService.updatePublication(id, updatePublicationDTO);
+    return this.publicationService.updatePublication(
+      publication_id,
+      updatePublicationDTO,
+    );
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.publicationService.softRemovePublication(id);
+  @Delete(':publication_id')
+  remove(@Param('publication_id') publication_id: string) {
+    return this.publicationService.softRemovePublication(publication_id);
   }
 }

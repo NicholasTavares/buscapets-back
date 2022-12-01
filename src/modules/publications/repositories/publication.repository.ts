@@ -10,7 +10,7 @@ export class PublicationRepository extends Repository<Publication> {
     super(Publication, dataSource.createEntityManager());
   }
 
-  async findAll(): Promise<Publication[]> {
+  async findAllPublications(): Promise<Publication[]> {
     const publications = await this.find({
       relations: ['publication_pictures'],
     });
@@ -18,16 +18,16 @@ export class PublicationRepository extends Repository<Publication> {
     return publications;
   }
 
-  async findPublication(id: string): Promise<Publication> {
+  async findPublication(publication_id: string): Promise<Publication> {
     const publication = await this.findOne({
       where: {
-        id,
+        id: publication_id,
       },
       relations: ['user', 'comments'],
     });
 
     if (!publication) {
-      throw new NotFoundException(`Publication ID ${id} not found`);
+      throw new NotFoundException(`Publication ID ${publication_id} not found`);
     }
 
     return publication;
@@ -48,22 +48,22 @@ export class PublicationRepository extends Repository<Publication> {
   }
 
   async updatePublication(
-    id: string,
+    publication_id: string,
     updatePublicationDTO: UpdatePublicationDTO,
   ): Promise<Publication> {
     const publication = await this.preload({
-      id,
+      id: publication_id,
       ...updatePublicationDTO,
     });
 
     if (!publication) {
-      throw new NotFoundException(`Publication ID ${id} not found`);
+      throw new NotFoundException(`Publication ID ${publication_id} not found`);
     }
 
     return this.save(publication);
   }
 
-  async softRemovePublication(id: string) {
-    await this.softRemove({ id });
+  async softRemovePublication(publication_id: string) {
+    await this.softRemove({ id: publication_id });
   }
 }

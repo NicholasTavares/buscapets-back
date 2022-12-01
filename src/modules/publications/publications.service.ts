@@ -10,13 +10,15 @@ export class PublicationsService {
   constructor(private readonly publicationRepository: PublicationRepository) {}
 
   async findAllPublications(): Promise<Publication[]> {
-    const publications = await this.publicationRepository.findAll();
+    const publications = await this.publicationRepository.findAllPublications();
 
     return publications;
   }
 
-  async findPublication(id: string): Promise<Publication> {
-    const publication = await this.publicationRepository.findPublication(id);
+  async findPublication(publication_id: string): Promise<Publication> {
+    const publication = await this.publicationRepository.findPublication(
+      publication_id,
+    );
 
     return publication;
   }
@@ -40,18 +42,18 @@ export class PublicationsService {
   }
 
   async updatePublication(
-    id: string,
+    publication_id: string,
     updatePublicationDTO: UpdatePublicationDTO,
   ): Promise<Publication> {
     const publication = await this.publicationRepository.updatePublication(
-      id,
+      publication_id,
       updatePublicationDTO,
     );
 
     return publication;
   }
 
-  async softRemovePublication(id: string) {
-    await this.publicationRepository.softRemovePublication(id);
+  async softRemovePublication(publication_id: string) {
+    await this.publicationRepository.softRemovePublication(publication_id);
   }
 }
