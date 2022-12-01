@@ -19,12 +19,32 @@ export class PublicationRepository extends Repository<Publication> {
   }
 
   async findPublication(publication_id: string): Promise<Publication> {
-    const publication = await this.findOne({
-      where: {
-        id: publication_id,
-      },
-      relations: ['user', 'comments'],
-    });
+    const publication = await this.createQueryBuilder('publication')
+      .leftJoin('publication.user', 'user')
+      .leftJoin('publication.comments', 'comments')
+      .leftJoin('comments.user', 'comment_user')
+      .where('publication.id = :id', { id: publication_id })
+      .select([
+        'publication.id',
+        'publication.title',
+        'publication.description',
+        'publication.pet_name',
+        'publication.type',
+        'publication.sex',
+        'publication.last_location',
+        'publication.disappearance_date',
+        'publication.created_at',
+        'publication.updated_at',
+      ])
+      .addSelect([
+        'user.id',
+        'user.name',
+        'comments.id',
+        'comment_user.name',
+        'comments.comment',
+        'comments.created_at',
+      ])
+      .getOne();
 
     if (!publication) {
       throw new NotFoundException(`Publication ID ${publication_id} not found`);
