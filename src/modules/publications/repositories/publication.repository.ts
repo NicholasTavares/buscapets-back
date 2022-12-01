@@ -11,9 +11,24 @@ export class PublicationRepository extends Repository<Publication> {
   }
 
   async findAllPublications(): Promise<Publication[]> {
-    const publications = await this.find({
-      relations: ['publication_pictures'],
-    });
+    const publications = this.createQueryBuilder('publications')
+      .leftJoin(
+        'publications.publication_pictures',
+        'publication_bunch_pictures',
+      )
+      .select([
+        'publications.id',
+        'publications.title',
+        'publications.description',
+        'publications.type',
+        'publications.sex',
+        'publications.last_location',
+        'publications.disappearance_date',
+        'publications.created_at',
+      ])
+      .addSelect(['publication_bunch_pictures.publication_picture'])
+      .orderBy('publications.created_at', 'DESC')
+      .getMany();
 
     return publications;
   }
@@ -21,6 +36,10 @@ export class PublicationRepository extends Repository<Publication> {
   async findPublication(publication_id: string): Promise<Publication> {
     const publication = await this.createQueryBuilder('publication')
       .leftJoin('publication.user', 'user')
+      .leftJoin(
+        'publication.publication_pictures',
+        'publication_bunch_pictures',
+      )
       .leftJoin('publication.comments', 'comments')
       .leftJoin('comments.user', 'comment_user')
       .where('publication.id = :id', { id: publication_id })
@@ -39,6 +58,7 @@ export class PublicationRepository extends Repository<Publication> {
       .addSelect([
         'user.id',
         'user.name',
+        'publication_bunch_pictures.publication_picture',
         'comments.id',
         'comment_user.name',
         'comments.comment',
