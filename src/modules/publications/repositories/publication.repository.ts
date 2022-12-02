@@ -10,24 +10,64 @@ export class PublicationRepository extends Repository<Publication> {
     super(Publication, dataSource.createEntityManager());
   }
 
-  async findAll(): Promise<Publication[]> {
-    const publications = await this.find({
-      relations: ['publication_pictures'],
-    });
+  async findAllPublications(): Promise<Publication[]> {
+    const publications = this.createQueryBuilder('publications')
+      .leftJoin(
+        'publications.publication_pictures',
+        'publication_bunch_pictures',
+      )
+      .select([
+        'publications.id',
+        'publications.title',
+        'publications.description',
+        'publications.type',
+        'publications.sex',
+        'publications.last_location',
+        'publications.disappearance_date',
+        'publications.created_at',
+      ])
+      .addSelect(['publication_bunch_pictures.publication_picture'])
+      .orderBy('publications.created_at', 'DESC')
+      .getMany();
 
     return publications;
   }
 
-  async findPublication(id: string): Promise<Publication> {
-    const publication = await this.findOne({
-      where: {
-        id,
-      },
-      relations: ['user', 'comments'],
-    });
+  async findPublication(publication_id: string): Promise<Publication> {
+    const publication = await this.createQueryBuilder('publication')
+      .leftJoin('publication.user', 'user')
+      .leftJoin(
+        'publication.publication_pictures',
+        'publication_bunch_pictures',
+      )
+      .leftJoin('publication.comments', 'comments')
+      .leftJoin('comments.user', 'comment_user')
+      .where('publication.id = :id', { id: publication_id })
+      .select([
+        'publication.id',
+        'publication.title',
+        'publication.description',
+        'publication.pet_name',
+        'publication.type',
+        'publication.sex',
+        'publication.last_location',
+        'publication.disappearance_date',
+        'publication.created_at',
+        'publication.updated_at',
+      ])
+      .addSelect([
+        'user.id',
+        'user.name',
+        'publication_bunch_pictures.publication_picture',
+        'comments.id',
+        'comment_user.name',
+        'comments.comment',
+        'comments.created_at',
+      ])
+      .getOne();
 
     if (!publication) {
-      throw new NotFoundException(`Publication ID ${id} not found`);
+      throw new NotFoundException(`Publication ID ${publication_id} not found`);
     }
 
     return publication;
@@ -48,22 +88,40 @@ export class PublicationRepository extends Repository<Publication> {
   }
 
   async updatePublication(
-    id: string,
+    user_id: string,
+    publication_id: string,
     updatePublicationDTO: UpdatePublicationDTO,
   ): Promise<Publication> {
-    const publication = await this.preload({
-      id,
-      ...updatePublicationDTO,
+    const publication = await this.findOne({
+      where: {
+        id: publication_id,
+        user_id,
+      },
     });
 
     if (!publication) {
-      throw new NotFoundException(`Publication ID ${id} not found`);
+      throw new NotFoundException(`Publication ID ${publication_id} not found`);
     }
 
-    return this.save(publication);
+    return this.save({
+      ...publication,
+      ...updatePublicationDTO,
+    });
   }
 
-  async softRemovePublication(id: string) {
-    await this.softRemove({ id });
+  async softRemovePublication(user_id: string, publication_id: string) {
+    const publication = await this.findOne({
+      where: {
+        id: publication_id,
+        user_id,
+      },
+      relations: ['comments', 'publication_pictures'],
+    });
+
+    if (!publication) {
+      throw new NotFoundException(`Publication ID ${publication_id} not found`);
+    }
+
+    await this.softRemove(publication);
   }
 }

@@ -15,8 +15,8 @@ export class UsersService {
     return users;
   }
 
-  async findUser(query: any): Promise<User> {
-    const user = await this.userRepository.findUser(query);
+  async findUser(user_id: string): Promise<User> {
+    const user = await this.userRepository.findUser(user_id);
 
     return user;
   }
@@ -42,18 +42,21 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(id: string, updateUserDTO: UpdateUserDTO): Promise<User> {
+  async updateUser(
+    user_id: string,
+    updateUserDTO: UpdateUserDTO,
+  ): Promise<User> {
     if (updateUserDTO.user_picture) {
       const s3Provider = new S3StorageProvider();
       const filename = await s3Provider.saveFile(updateUserDTO.user_picture);
       updateUserDTO.user_picture = filename;
     }
-    const user = await this.userRepository.updateUser(id, updateUserDTO);
+    const user = await this.userRepository.updateUser(user_id, updateUserDTO);
 
     return user;
   }
 
-  async softRemoveUser(id: string) {
-    await this.userRepository.softRemoveUser(id);
+  async softRemoveUser(user_id: string) {
+    await this.userRepository.softRemoveUser(user_id);
   }
 }

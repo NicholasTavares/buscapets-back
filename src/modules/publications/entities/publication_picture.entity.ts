@@ -15,7 +15,7 @@ export class PublicationPicture {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ name: 'publication_picture' })
   publication_picture: string;
 
   @Column({ name: 'publication_id' })
@@ -34,7 +34,7 @@ export class PublicationPicture {
   @CreateDateColumn({ type: 'datetime' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'datetime' })
   updated_at: Date;
 
   @DeleteDateColumn({ type: 'datetime' })

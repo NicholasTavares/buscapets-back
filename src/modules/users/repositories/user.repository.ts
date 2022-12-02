@@ -1,5 +1,10 @@
 import { DataSource, Repository } from 'typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { UpdateUserDTO } from '../dto/update-user.dto';
@@ -16,15 +21,15 @@ export class UserRepository extends Repository<User> {
     return users;
   }
 
-  async findUser(query: any): Promise<User> {
+  async findUser(user_id: string): Promise<User> {
     const user = await this.findOne({
-      where: query,
+      where: {
+        id: user_id,
+      },
     });
 
-    console.log('USER', user);
-
     if (!user) {
-      throw new NotFoundException(`User not found`);
+      throw new NotFoundException(`User ID ${user_id} not found`);
     }
 
     return user;
@@ -33,27 +38,52 @@ export class UserRepository extends Repository<User> {
   async createUser(createUserDTO: CreateUserDTO): Promise<User> {
     const user = this.create(createUserDTO);
 
-    await this.save(user);
+    try {
+      await this.save(user);
+    } catch (error) {
+      const DUPLICATE_MYSQL_ERROR = 1062;
+      if (error.errno === DUPLICATE_MYSQL_ERROR) {
+        throw new ConflictException('Email already exists');
+      }
+
+      throw new InternalServerErrorException();
+    }
 
     return user;
   }
 
-  async updateUser(id: string, updateUserDTO: UpdateUserDTO): Promise<User> {
+  async updateUser(
+    user_id: string,
+    updateUserDTO: UpdateUserDTO,
+  ): Promise<User> {
     const user = await this.preload({
-      id,
+      id: user_id,
       ...updateUserDTO,
     });
 
     if (!user) {
-      throw new NotFoundException(`User ID ${id} not found`);
+      throw new NotFoundException(`User ID ${user_id} not found`);
     }
 
-    await this.save(user);
-
-    return user;
+    return this.save(user);
   }
 
-  async softRemoveUser(id: string) {
-    await this.softRemove({ id });
+  async softRemoveUser(user_id: string) {
+    const user = await this.createQueryBuilder('user')
+      .innerJoin('user.comments', 'comments')
+      .innerJoin('user.publications', 'publications')
+      .innerJoin('publications.publication_pictures', 'publication_pictures')
+      .where({
+        id: user_id,
+      })
+      .select(['user.id'])
+      .addSelect(['comments.id', 'publications.id', 'publication_pictures.id'])
+      .getMany();
+
+    if (!user.length) {
+      throw new NotFoundException(`User ID ${user_id} not found`);
+    }
+
+    await this.softRemove(user);
   }
 }

@@ -20,7 +20,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({ select: false })
@@ -32,7 +32,7 @@ export class User {
   @Column({ default: 'user' })
   role: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'user_picture' })
   user_picture: string;
 
   @OneToMany(() => Publication, (publication) => publication.user, {
@@ -45,13 +45,13 @@ export class User {
   })
   comments: Comment[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'datetime' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'datetime' })
   updated_at: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: 'datetime' })
   deleted_at: Date;
 
   @BeforeInsert()

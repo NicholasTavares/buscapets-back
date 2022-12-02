@@ -6,7 +6,7 @@ import {
   Param,
   Patch,
   Post,
-  Query,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -20,15 +20,16 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
+
   @UseGuards(AuthGuard('jwt'))
   @Get()
   findAll() {
     return this.userService.findAllUsers();
   }
 
-  @Get('/find')
-  findOne(@Query() query) {
-    return this.userService.findUser(query);
+  @Get(':user_id')
+  findOne(@Param('user_id') user_id: string) {
+    return this.userService.findUser(user_id);
   }
 
   @Post()
@@ -41,19 +42,21 @@ export class UsersController {
     return this.userService.createUser(createUserDTO);
   }
 
-  @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @Patch()
   @UseInterceptors(FileInterceptor('user_picture'))
   update(
-    @Param('id') id: string,
+    @Req() req: any,
     @Body() updateUserDTO: UpdateUserDTO,
     @UploadedFile() user_picture: Express.Multer.File,
   ) {
     updateUserDTO.user_picture = user_picture;
-    return this.userService.updateUser(id, updateUserDTO);
+    return this.userService.updateUser(req.user.id, updateUserDTO);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.softRemoveUser(id);
+  @UseGuards(AuthGuard('jwt'))
+  @Delete()
+  remove(@Req() req: any) {
+    return this.userService.softRemoveUser(req.user.id);
   }
 }

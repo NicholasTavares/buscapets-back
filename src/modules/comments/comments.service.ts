@@ -7,14 +7,15 @@ import { CommentRepository } from './repositories/comment.repository';
 @Injectable()
 export class CommentsService {
   constructor(private readonly commentRepository: CommentRepository) {}
+
   async findAllComments(): Promise<Comment[]> {
     const comments = await this.commentRepository.findAll();
 
     return comments;
   }
 
-  async findComment(id: string): Promise<Comment> {
-    const comment = await this.commentRepository.findComment(id);
+  async findComment(comment_id: string): Promise<Comment> {
+    const comment = await this.commentRepository.findComment(comment_id);
 
     return comment;
   }
@@ -32,18 +33,20 @@ export class CommentsService {
   }
 
   async updateComment(
-    id: string,
+    user_id: string,
+    comment_id: string,
     updateCommentDTO: UpdateCommentDTO,
   ): Promise<Comment> {
     const comment = await this.commentRepository.updateComment(
-      id,
+      user_id,
+      comment_id,
       updateCommentDTO,
     );
 
     return comment;
   }
 
-  async softRemoveComment(id: string) {
-    await this.commentRepository.softRemoveComment(id);
+  async softRemoveComment(user_id: string, comment_id: string) {
+    await this.commentRepository.softRemoveComment(user_id, comment_id);
   }
 }

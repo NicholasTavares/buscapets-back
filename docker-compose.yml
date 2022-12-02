@@ -20,7 +20,7 @@ services:
       MYSQL_PASSWORD: sqlP4SS
       MYSQL_ROOT_PASSWORD: RO0TsqlP4SS
     ports:
-      - '3308:3306'
+      - '3307:3306'
     volumes:
       - mysql_buscapets:/usr/buscapets/datadir
     restart: always

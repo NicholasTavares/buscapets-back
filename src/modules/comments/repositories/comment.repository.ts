@@ -16,16 +16,16 @@ export class CommentRepository extends Repository<Comment> {
     return comments;
   }
 
-  async findComment(id: string): Promise<Comment> {
+  async findComment(comment_id: string): Promise<Comment> {
     const comment = await this.findOne({
       where: {
-        id,
+        id: comment_id,
       },
       relations: ['user', 'publication'],
     });
 
     if (!comment) {
-      throw new NotFoundException(`Comment ID ${id} not found`);
+      throw new NotFoundException(`Comment ID ${comment_id} not found`);
     }
 
     return comment;
@@ -36,32 +36,47 @@ export class CommentRepository extends Repository<Comment> {
     user_id: string,
   ): Promise<Comment> {
     const comment = this.create({
-      ...createCommentDTO,
       user_id,
+      ...createCommentDTO,
     });
-
-    await this.save(comment);
-
-    return comment;
-  }
-
-  async updateComment(
-    id: string,
-    updateCommentDTO: UpdateCommentDTO,
-  ): Promise<Comment> {
-    const comment = await this.preload({
-      id,
-      ...updateCommentDTO,
-    });
-
-    if (!comment) {
-      throw new NotFoundException(`Comment ID ${id} not found`);
-    }
 
     return this.save(comment);
   }
 
-  async softRemoveComment(id: string) {
-    await this.softRemove({ id });
+  async updateComment(
+    user_id: string,
+    comment_id: string,
+    updateCommentDTO: UpdateCommentDTO,
+  ): Promise<Comment> {
+    const comment = await this.findOne({
+      where: {
+        id: comment_id,
+        user_id,
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException(`Comment ID ${comment_id} not found`);
+    }
+
+    return this.save({
+      ...comment,
+      ...updateCommentDTO,
+    });
+  }
+
+  async softRemoveComment(user_id: string, comment_id: string) {
+    const comment = await this.findOne({
+      where: {
+        id: comment_id,
+        user_id,
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException(`Comment ID ${comment_id} not found`);
+    }
+
+    await this.softRemove(comment);
   }
 }
