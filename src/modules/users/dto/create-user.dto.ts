@@ -18,7 +18,9 @@ export class CreateUserDTO {
   readonly name: string;
 
   @IsNotEmpty()
-  @IsEmail({}, { message: 'Email inválido.' })
+  @Matches(RegExHelper.email, {
+    message: MessagesHelper.INVALID_PASSWORD_OR_EMAIL,
+  })
   readonly email: string;
 
   @IsNotEmpty()
