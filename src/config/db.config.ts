@@ -9,8 +9,8 @@ export default registerAs('database', () => {
     username: process.env.DB_MAIN_USER,
     password: process.env.DB_MAIN_PASSWORD,
     database: process.env.DB_MAIN_DATABASE,
-    autoLoadEntities: false,
-    synchronize: false,
+    autoLoadEntities: true,
+    synchronize: true,
     entities: [__dirname + '/../modules/**/entities/*.entity{.js,.ts}'],
   };
 });
