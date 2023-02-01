@@ -71,6 +71,9 @@ export class Publication {
   @Column({ type: 'datetime' })
   disappearance_date: Date;
 
+  @Column()
+  address: string;
+
   @CreateDateColumn({ type: 'datetime' })
   created_at: Date;
 

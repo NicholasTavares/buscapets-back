@@ -19,7 +19,7 @@ import { PublicationsService } from './publications.service';
 
 @Controller('publications')
 export class PublicationsController {
-  constructor(private readonly publicationService: PublicationsService) {}
+  constructor(private readonly publicationService: PublicationsService) { }
 
   @Get('/all')
   findAll() {
@@ -46,6 +46,7 @@ export class PublicationsController {
     @Request() req: any,
   ) {
     createPublicationDTO.publication_pictures = publication_pictures;
+    console.log(createPublicationDTO);
     return this.publicationService.createPublication(
       createPublicationDTO,
       req.user.id,

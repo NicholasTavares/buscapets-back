@@ -7,7 +7,7 @@ export default class S3StorageProvider {
 
   constructor() {
     this.client = new S3({
-      region: 'us-east-1',
+      region: 'sa-east-1',
     });
   }
 
@@ -27,7 +27,7 @@ export default class S3StorageProvider {
       })
       .promise();
 
-    return 'https://buscapets.s3.amazonaws.com/' + filename;
+    return 'https://buscapets-pds.s3.sa-east-1.amazonaws.com/' + filename;
   }
 
   async saveFiles(files: Express.Multer.File[]): Promise<string[]> {
@@ -38,7 +38,7 @@ export default class S3StorageProvider {
       files.map((file) => {
         const fileHash = randomBytes(10).toString('hex');
         urls.push({
-          publication_picture: `https://buscapets.s3.amazonaws.com/${fileHash}-${file.originalname}`,
+          publication_picture: `https://buscapets-pds.s3.sa-east-1.amazonaws.com/${fileHash}-${file.originalname}`,
         });
         return new Promise((resolve) =>
           resolve(

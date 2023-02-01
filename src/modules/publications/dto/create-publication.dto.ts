@@ -40,6 +40,10 @@ export class CreatePublicationDTO {
   @Transform(({ value }) => (value ? ToGeometry(value) : undefined))
   readonly last_location: Geometry;
 
+  @IsNotEmpty({ message: 'Endereço da publicação é obrigatório.' })
+  @IsString()
+  readonly address: string;
+
   @IsNotEmpty({ message: 'Data do desaparecimento do pet é obrigatória.' })
   @IsISO8601(true, { message: 'Data inválida' })
   readonly disappearance_date: Date;

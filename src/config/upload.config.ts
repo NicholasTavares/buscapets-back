@@ -20,7 +20,7 @@ const uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
 const tmpFolder = path.resolve(__dirname, '..', '..', 'temp');
 
 export default {
-  driver: process.env.STORAGE_DRIVER,
+  driver: 's3',
   tmpFolder,
   directory: uploadFolder,
   multer: {
@@ -37,7 +37,7 @@ export default {
   },
   config: {
     aws: {
-      bucket: 'buscapets',
+      bucket: 'buscapets-pds',
     },
   },
 } as UploadConfig;
