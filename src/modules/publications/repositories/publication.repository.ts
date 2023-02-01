@@ -111,11 +111,10 @@ export class PublicationRepository extends Repository<Publication> {
     });
   }
 
-  async softRemovePublication(user_id: string, publication_id: string) {
+  async softRemovePublication(publication_id: string) {
     const publication = await this.findOne({
       where: {
         id: publication_id,
-        user_id,
       },
       relations: ['comments', 'publication_pictures'],
     });

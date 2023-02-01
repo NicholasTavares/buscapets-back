@@ -69,10 +69,7 @@ export class PublicationsController {
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':publication_id')
-  remove(@Param('publication_id') publication_id: string, @Request() req: any) {
-    return this.publicationService.softRemovePublication(
-      req.user.id,
-      publication_id,
-    );
+  remove(@Param('publication_id') publication_id: string) {
+    return this.publicationService.softRemovePublication(publication_id);
   }
 }

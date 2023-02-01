@@ -7,7 +7,7 @@ import { PublicationRepository } from './repositories/publication.repository';
 
 @Injectable()
 export class PublicationsService {
-  constructor(private readonly publicationRepository: PublicationRepository) {}
+  constructor(private readonly publicationRepository: PublicationRepository) { }
 
   async findAllPublications(): Promise<Publication[]> {
     const publications = await this.publicationRepository.findAllPublications();
@@ -55,10 +55,7 @@ export class PublicationsService {
     return publication;
   }
 
-  async softRemovePublication(user_id: string, publication_id: string) {
-    await this.publicationRepository.softRemovePublication(
-      user_id,
-      publication_id,
-    );
+  async softRemovePublication(publication_id: string) {
+    await this.publicationRepository.softRemovePublication(publication_id);
   }
 }
