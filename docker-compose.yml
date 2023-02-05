@@ -1,19 +1,22 @@
 version: '3.5'
 
-networks:
-  app-buscapets:
-    driver: bridge
-
-volumes:
-  mysql_buscapets:
-    driver: local
-
 services:
+  api:
+    build: .
+    restart: always
+    container_name: api-buscapets
+    depends_on:
+      - mysql
+    ports:
+      - '3002:3002'
+    volumes:
+      - ./src:/usr/buscapets/src
+      - ./.env:/usr/buscapets/.env
+    command: sh -c 'yarn build && yarn start:prod && yarn cache clean'
+
   mysql:
-    container_name: mysql_container
+    container_name: mysql-container
     image: mysql:5.7
-    networks:
-      - app-buscapets
     environment:
       MYSQL_DATABASE: buscapets
       MYSQL_USER: buscapets
@@ -22,20 +25,5 @@ services:
     ports:
       - '3307:3306'
     volumes:
-      - mysql_buscapets:/usr/buscapets/datadir
+      - .:/usr/buscapets/datadir
     restart: always
-
-  api:
-    build: .
-    restart: always
-    container_name: api_buscapets
-    networks:
-      - app-buscapets
-    depends_on:
-      - mysql
-    ports:
-      - '3002:3002'
-    volumes:
-      - ./src:/usr/buscapets/src
-      - ./.env:/usr/buscapets/.env
-    command: yarn start:dev
